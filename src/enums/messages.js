@@ -1,6 +1,6 @@
 const MESSAGES = Object.freeze({
 	CREATED: 'Successfully created!',
-	CONFLICT: 'Name already existing!',
+	CONFLICT: 'E-mail already existing!',
 	CATEGORY_NOT_FOUND: 'Category not found!',
 	ID_NOT_FOUND: 'Id not found!',
 	CLIENT_NOT_FOUND: 'Client not founnd!',
@@ -9,7 +9,8 @@ const MESSAGES = Object.freeze({
 	CPF_CONFLICT: 'CPF already existing!',
 	SERVER_ERROR: 'Server Error!',
 	UPDATE_SUCCESS: 'Update Success!',
-	DELETE: 'Successfully deleted!'
+	DELETE: 'Successfully deleted!',
+	WRONG_PASSWORDS: 'Passwords do not match!'
 });
 
 export { MESSAGES };

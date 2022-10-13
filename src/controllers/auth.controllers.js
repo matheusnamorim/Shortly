@@ -3,6 +3,7 @@ import { STATUS_CODE } from "../enums/statusCode.js";
 import { MESSAGES } from "../enums/messages.js";
 
 const registerUser = (req, res) => {
+    const { user } = res.locals;
     try {
         return res.send('ok');
     } catch (error) {
