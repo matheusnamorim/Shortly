@@ -12,4 +12,8 @@ const loginSchema = Joi.object({
     password: Joi.string().trim().required()
 });
 
-export { signUpSchema, loginSchema };
+const urlSchema = Joi.object({
+    url: Joi.string().regex(/^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/).required()
+});
+
+export { signUpSchema, loginSchema, urlSchema };
