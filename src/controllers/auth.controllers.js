@@ -12,7 +12,7 @@ const registerUser = (req, res) => {
         connection.query(`INSERT INTO users (name, email, password) VALUES ($1, $2, $3);`, 
         [name, email, passwordHash]);
 
-        return res.sendStatus(STATUS_CODE.OK);
+        return res.sendStatus(STATUS_CODE.CREATED);
     } catch (error) {
         return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);
     }

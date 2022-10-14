@@ -19,7 +19,7 @@ async function validateUrl(req, res, next){
             `SELECT * FROM sessions WHERE token = ($1);`, [token])).rows;
         if(tokenExist.length === 0) return res.status(STATUS_CODE.UNAUTHORIZED).send(MESSAGES.TOKEN_NOT_FOUND);
 
-        res.locals.userId = tokenExist[0].userId;
+        res.locals.data = {id: tokenExist[0].id, url: req.body.url};
         next();
     } catch (error) {
         return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);
