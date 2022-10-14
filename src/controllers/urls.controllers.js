@@ -19,4 +19,13 @@ const shortedUrl = (req, res) => {
     }
 };
 
-export { shortedUrl };
+const getShortUrlId = (req, res) => {
+    const { data } = res.locals;
+    try {
+        return res.status(STATUS_CODE.OK).send(data);
+    } catch (error) {
+        return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);
+    }
+};
+
+export { shortedUrl, getShortUrlId };

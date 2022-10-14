@@ -41,4 +41,20 @@ async function validateUrl(req, res, next){
     }
 };
 
-export { validateUrl };
+async function validateShortUrl(req, res, next){
+    const { id } = req.params;
+    try {
+        const shortUrl = ( await connection.query(
+            `SELECT urls.id, urls."shortUrl", urls.url 
+            FROM urls WHERE urls.id = ($1);`, [id]
+        )).rows;
+        if(shortUrl.length === 0 ) return res.status(STATUS_CODE.NOT_FOUND).send(MESSAGES.URL_NOT_FOUND);
+        
+        res.locals.data = shortUrl[0];
+        next();
+    } catch (error) {
+        return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);
+    }
+};
+
+export { validateUrl, validateShortUrl };
