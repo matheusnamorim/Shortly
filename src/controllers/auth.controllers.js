@@ -2,6 +2,7 @@ import { connection } from "../db/db.js";
 import { STATUS_CODE } from "../enums/statusCode.js";
 import { MESSAGES } from "../enums/messages.js";
 import bcrypt from 'bcrypt';
+import {v4 as uuid} from 'uuid';
 
 const registerUser = (req, res) => {
     const { name, email, password } = res.locals.user;
@@ -18,7 +19,17 @@ const registerUser = (req, res) => {
 };
 
 const loginUser = (req, res) => {
-    return res.send('ok');
+    const { userId } = res.locals;
+    try {
+        const token = uuid();
+        
+        connection.query(`INSERT INTO sessions (token, "userId") VALUES ($1, $2)`, 
+        [token, userId]);
+        
+        return res.status(STATUS_CODE.OK).send({token,});
+    } catch (error) {
+        return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);
+    }
 };
 
 export { registerUser, loginUser };

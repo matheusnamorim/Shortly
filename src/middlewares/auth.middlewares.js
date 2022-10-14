@@ -41,6 +41,7 @@ async function validateLogin(req, res, next){
         
         if(userExist.length === 0 || bcrypt.compareSync(password, userExist[0].password) === false ) return res.status(STATUS_CODE.UNAUTHORIZED).send(MESSAGES.NOT_FOUND);
 
+        res.locals.userId = userExist[0].id;
         next();
     } catch (error) {
         return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);
