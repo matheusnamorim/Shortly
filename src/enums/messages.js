@@ -3,7 +3,7 @@ const MESSAGES = Object.freeze({
 	CONFLICT: 'E-mail already existing!',
 	CATEGORY_NOT_FOUND: 'Category not found!',
 	ID_NOT_FOUND: 'Id not found!',
-	CLIENT_NOT_FOUND: 'Client not founnd!',
+	NOT_FOUND: 'Check the data again!',
 	GAME_NOT_FOUND: 'Game not found!',
 	IS_NAN: 'Value is not a number!',
 	CPF_CONFLICT: 'CPF already existing!',

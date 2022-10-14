@@ -7,4 +7,9 @@ const signUpSchema = Joi.object({
     confirmPassword: Joi.string().trim().required()
 });
 
-export { signUpSchema };
+const loginSchema = Joi.object({
+    email: Joi.string().email().required(),
+    password: Joi.string().trim().required()
+});
+
+export { signUpSchema, loginSchema };

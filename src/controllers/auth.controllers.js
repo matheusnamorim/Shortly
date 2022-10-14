@@ -17,4 +17,8 @@ const registerUser = (req, res) => {
     }
 };
 
-export {registerUser};
+const loginUser = (req, res) => {
+    return res.send('ok');
+};
+
+export { registerUser, loginUser };
