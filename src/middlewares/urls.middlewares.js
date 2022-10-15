@@ -70,4 +70,31 @@ async function validateShortUrl(req, res, next){
     }
 };
 
-export { validateUrl, validateUrlExist, validateShortUrl };
+async function validateId(req, res, next){
+    const { token } = res.locals;
+    const { id } = req.params;
+
+    try {
+        const nameToken = ( await connection.query(`
+            SELECT users.email FROM sessions 
+            JOIN users ON sessions."userId"=users.id
+            WHERE sessions.token = $1;
+        `, [token.token])).rows;
+        
+        const nameUrl = ( await connection.query(`
+            SELECT * FROM urls
+            JOIN sessions ON urls."sessionId"=sessions.id
+            JOIN users ON sessions."userId"=users.id
+            WHERE urls.id = $1;
+        `, [id])).rows;
+
+        if(nameUrl.length === 0) return res.status(STATUS_CODE.NOT_FOUND).send(MESSAGES.URL_NOT_FOUND);
+        if(nameToken[0].email !== nameUrl[0].email) return res.status(STATUS_CODE.UNAUTHORIZED).send(MESSAGES.USER_UNAUTHORIZED);
+        
+        next();
+    } catch (error) {
+        return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);
+    }
+};
+
+export { validateUrl, validateUrlExist, validateShortUrl, validateId };
