@@ -54,10 +54,36 @@ const deleteUrl = (req, res) => {
     }
 };
 
-const listMyShortenedUrls = (req, res) => {
+const listMyShortenedUrls = async (req, res) => {
     const { token } = res.locals;
     try {
-        return res.send(token);
+
+        const dataHead = ( await connection.query(`
+            SELECT users.id,
+            users.name,
+            SUM(urls."visitCount") AS "visitCount"
+            FROM urls
+            JOIN sessions ON urls."sessionId"=sessions.id
+            JOIN users ON sessions."userId"=users.id
+            WHERE sessions."userId" = $1
+            GROUP BY users.id;`
+        , [token.userId])).rows[0];
+        
+        const dataBody = ( await connection.query(`SELECT urls.id,
+            urls."shortUrl",
+            urls.url,
+            urls."visitCount"
+            FROM urls
+            JOIN sessions ON urls."sessionId"=sessions.id
+            WHERE sessions."userId" = $1;`
+        , [token.userId])).rows;
+
+        const data = {
+            ...dataHead,
+            shortenedUrls: [...dataBody]
+        }
+
+        return res.status(STATUS_CODE.OK).send(data);
     } catch (error) {
         return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);
     }
