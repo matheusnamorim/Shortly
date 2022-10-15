@@ -4,6 +4,7 @@ const MESSAGES = Object.freeze({
 	NOT_FOUND: 'Check the data again!',
 	TOKEN_NOT_FOUND: 'Token not found!',
 	URL_NOT_FOUND: 'URL not found!',
+	USER_NOT_FOUND: 'User not found!',
 	SHORT_URL_NOT_FOUND: 'ShortUrl not found!',
 	URL_EXIST: 'There is already a shortened url!',
 	USER_UNAUTHORIZED: 'User Unauthorized!',

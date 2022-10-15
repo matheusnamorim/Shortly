@@ -54,4 +54,13 @@ const deleteUrl = (req, res) => {
     }
 };
 
-export { shortedUrl, getShortUrlId, redirectUrl, deleteUrl };
+const listMyShortenedUrls = (req, res) => {
+    const { token } = res.locals;
+    try {
+        return res.send(token);
+    } catch (error) {
+        return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);
+    }
+};
+
+export { shortedUrl, getShortUrlId, redirectUrl, deleteUrl, listMyShortenedUrls };

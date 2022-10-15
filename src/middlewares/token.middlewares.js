@@ -8,7 +8,7 @@ async function validateToken(req, res, next){
     
     const tokenExist = (await connection.query(
         `SELECT * FROM sessions WHERE token = ($1);`, [token])).rows;
-    if(tokenExist.length === 0) return res.status(STATUS_CODE.UNAUTHORIZED).send(MESSAGES.TOKEN_NOT_FOUND);
+    if(tokenExist.length === 0) return res.status(STATUS_CODE.NOT_FOUND).send(MESSAGES.USER_NOT_FOUND);
     
     res.locals.token = tokenExist[0];
     next();
