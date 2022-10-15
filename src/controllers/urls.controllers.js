@@ -28,4 +28,18 @@ const getShortUrlId = (req, res) => {
     }
 };
 
-export { shortedUrl, getShortUrlId };
+const redirectUrl = (req, res) => {
+    const { data } = res.locals;
+
+    try {
+        connection.query(`
+            UPDATE urls SET "visitCount" = $1 WHERE urls.id = $2;
+        `, [data.visitCount+1, data.id]);
+
+        return res.redirect(data.url);
+    } catch (error) {
+        return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);
+    }
+};
+
+export { shortedUrl, getShortUrlId, redirectUrl };
