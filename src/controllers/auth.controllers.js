@@ -21,9 +21,7 @@ const loginUser = (req, res) => {
     const { userId } = res.locals;
     try {
         const token = uuid();
-        
-        connection.query(`INSERT INTO sessions (token, "userId") VALUES ($1, $2)`, 
-        [token, userId]);
+        authRepository.login(token, userId);
         
         return res.status(STATUS_CODE.OK).send({token,});
     } catch (error) {
