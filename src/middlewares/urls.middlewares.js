@@ -15,7 +15,7 @@ async function validateUrl(req, res, next){
         } 
         
         const emailExist = ( await connection.query(
-            `SELECT users.email FROM sessions 
+            `SELECT users.email, users."linksCount" FROM sessions 
             JOIN users ON sessions."userId"=users.id
             WHERE sessions.token = ($1);`, [token.token]
         )).rows[0];
@@ -30,7 +30,7 @@ async function validateUrl(req, res, next){
         
         if(shortUrlExist.length !== 0 ) return res.status(STATUS_CODE.CONFLICT).send(MESSAGES.URL_EXIST);
 
-        res.locals.data = {id: token.id, url: req.body.url, userId: token.userId};
+        res.locals.data = {id: token.id, url: req.body.url, userId: token.userId, linksCount: emailExist.linksCount};
         next();
     } catch (error) {
         return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);

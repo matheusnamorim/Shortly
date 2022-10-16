@@ -5,13 +5,16 @@ import { nanoid } from "nanoid";
 
 const shortedUrl = (req, res) => {
     
-    const { id, url, userId } = res.locals.data;
+    const { id, url, userId, linksCount } = res.locals.data;
 
     try {
         const shortUrl = nanoid(8);
         
         connection.query(`INSERT INTO urls (url, "shortUrl", "sessionId", "userId") 
         VALUES ($1, $2, $3, $4);`, [url, shortUrl, id, userId]);
+
+        connection.query(`UPDATE users SET "linksCount" = $1 WHERE id = $2;`
+        , [linksCount+1, userId]);
         
         return res.status(STATUS_CODE.CREATED).send({shortUrl,});
     } catch (error) {
@@ -102,4 +105,24 @@ const listMyShortenedUrls = async (req, res) => {
     }
 };
 
-export { shortedUrl, getShortUrlId, redirectUrl, deleteUrl, listMyShortenedUrls };
+const listRanking = async (req, res) => {
+    try {
+        const list = ( await connection.query(`
+            SELECT users.id,
+            users.name,
+            users."linksCount",
+            SUM(urls."visitCount") AS "visitCount"
+            FROM users
+            JOIN urls ON users.id=urls."userId"
+            GROUP BY users.id
+            ORDER BY "visitCount" DESC
+            LIMIT 10;
+        `)).rows;
+
+        return res.status(STATUS_CODE.OK).send(list);
+    } catch (error) {
+        return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);
+    }
+};
+
+export { shortedUrl, getShortUrlId, redirectUrl, deleteUrl, listMyShortenedUrls, listRanking };
