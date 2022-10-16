@@ -2,19 +2,14 @@ import { connection } from "../db/db.js";
 import { STATUS_CODE } from "../enums/statusCode.js";
 import { MESSAGES } from "../enums/messages.js";
 import { nanoid } from "nanoid";
+import * as urlsRepository from '../repositories/urlsRepository.js';
 
 const shortedUrl = (req, res) => {
-    
     const { id, url, userId, linksCount } = res.locals.data;
 
     try {
         const shortUrl = nanoid(8);
-        
-        connection.query(`INSERT INTO urls (url, "shortUrl", "sessionId", "userId") 
-        VALUES ($1, $2, $3, $4);`, [url, shortUrl, id, userId]);
-
-        connection.query(`UPDATE users SET "linksCount" = $1 WHERE id = $2;`
-        , [linksCount+1, userId]);
+        urlsRepository.shortedUrls(url, shortUrl, id, userId, linksCount);
         
         return res.status(STATUS_CODE.CREATED).send({shortUrl,});
     } catch (error) {
@@ -35,10 +30,7 @@ const redirectUrl = (req, res) => {
     const { data } = res.locals;
 
     try {
-        connection.query(`
-            UPDATE urls SET "visitCount" = $1 WHERE urls.id = $2;
-        `, [data.visitCount+1, data.id]);
-
+        urlsRepository.redirectUrls(data.visitCount, data.id);
         return res.redirect(data.url);
     } catch (error) {
         return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);

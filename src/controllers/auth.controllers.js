@@ -1,4 +1,3 @@
-import { connection } from "../db/db.js";
 import { STATUS_CODE } from "../enums/statusCode.js";
 import { MESSAGES } from "../enums/messages.js";
 import bcrypt from 'bcrypt';
