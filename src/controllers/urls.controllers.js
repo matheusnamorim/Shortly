@@ -67,8 +67,21 @@ const listMyShortenedUrls = async (req, res) => {
             JOIN users ON sessions."userId"=users.id
             WHERE sessions."userId" = $1
             GROUP BY users.id;`
-        , [token.userId])).rows[0];
+        , [token.userId])).rows;
         
+        if(dataHead.length === 0){
+            const data = ( await connection.query(`
+                SELECT users.id,
+                users.name
+                FROM users
+                WHERE users.id = $1;
+            `, [token.userId])).rows[0];
+            return res.status(STATUS_CODE.OK).send({
+                ...data,
+                visitCount: 0,
+                shortenedUrls: []
+            });
+        }
         const dataBody = ( await connection.query(`SELECT urls.id,
             urls."shortUrl",
             urls.url,
@@ -79,7 +92,7 @@ const listMyShortenedUrls = async (req, res) => {
         , [token.userId])).rows;
 
         const data = {
-            ...dataHead,
+            ...dataHead[0],
             shortenedUrls: [...dataBody]
         }
 
