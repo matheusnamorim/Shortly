@@ -112,39 +112,20 @@ const listMyShortenedUrls = async (req, res) => {
 };
 
 const listRanking = async (req, res) => {
-    let dif;
     try {
         const list = ( await connection.query(`
-            SELECT users.id,
-            users.name,
+            SELECT users.id, 
+            users.name, 
             users."linksCount",
-            SUM(urls."visitCount") AS "visitCount"
+            COALESCE(SUM(urls."visitCount"), 0) AS "visitCount"
             FROM users
-            JOIN urls ON users.id=urls."userId"
+            LEFT JOIN urls ON users.id=urls."userId"
             GROUP BY users.id
             ORDER BY "visitCount" DESC
             LIMIT 10;
         `)).rows;
         
-        if(list.length < 10) {
-            dif = 10 - list.length;
-        
-        const extraList = ( await connection.query(`
-            SELECT users.id, users.name, users."linksCount" 
-            FROM users 
-            WHERE "linksCount" = 0 
-            ORDER BY "linksCount" DESC
-            LIMIT $1;
-        `, [dif])).rows;
-        
-        const result = extraList.map(value => ({
-            ...value, 
-            shortenedUrls: "0"
-        }));
-        
-        return res.status(STATUS_CODE.OK).send(list.concat(result));
-        }
-        else return res.status(STATUS_CODE.OK).send(list);
+        return res.status(STATUS_CODE.OK).send(list);
     } catch (error) {
         return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);
     }
