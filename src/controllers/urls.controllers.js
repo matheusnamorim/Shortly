@@ -5,13 +5,13 @@ import { nanoid } from "nanoid";
 
 const shortedUrl = (req, res) => {
     
-    const { id, url } = res.locals.data;
+    const { id, url, userId } = res.locals.data;
 
     try {
         const shortUrl = nanoid(8);
         
-        connection.query(`INSERT INTO urls (url, "shortUrl", "sessionId") 
-        VALUES ($1, $2, $3);`, [url, shortUrl, id]);
+        connection.query(`INSERT INTO urls (url, "shortUrl", "sessionId", "userId") 
+        VALUES ($1, $2, $3, $4);`, [url, shortUrl, id, userId]);
         
         return res.status(STATUS_CODE.CREATED).send({shortUrl,});
     } catch (error) {
@@ -62,10 +62,9 @@ const listMyShortenedUrls = async (req, res) => {
             SELECT users.id,
             users.name,
             SUM(urls."visitCount") AS "visitCount"
-            FROM urls
-            JOIN sessions ON urls."sessionId"=sessions.id
-            JOIN users ON sessions."userId"=users.id
-            WHERE sessions."userId" = $1
+            FROM users
+            JOIN urls ON users.id=urls."userId"
+            WHERE urls."userId" = $1
             GROUP BY users.id;`
         , [token.userId])).rows;
         
@@ -82,13 +81,14 @@ const listMyShortenedUrls = async (req, res) => {
                 shortenedUrls: []
             });
         }
-        const dataBody = ( await connection.query(`SELECT urls.id,
+        const dataBody = ( await connection.query(`
+            SELECT urls.id,
             urls."shortUrl",
             urls.url,
             urls."visitCount"
-            FROM urls
-            JOIN sessions ON urls."sessionId"=sessions.id
-            WHERE sessions."userId" = $1;`
+            FROM users
+            JOIN urls ON users.id=urls."userId"
+            WHERE urls."userId" = $1;`
         , [token.userId])).rows;
 
         const data = {

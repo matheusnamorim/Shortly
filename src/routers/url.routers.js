@@ -11,5 +11,6 @@ router.get('/urls/:id', validateUrlExist, getShortUrlId);
 router.get('/urls/open/:shortUrl', validateShortUrl, redirectUrl);
 router.delete('/urls/:id', validateToken, validateId, deleteUrl);
 router.get('/users/me', validateToken, listMyShortenedUrls);
+router.get('/ranking');
 
 export default router;

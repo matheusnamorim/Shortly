@@ -6,7 +6,6 @@ import { connection } from "../db/db.js";
 async function validateUrl(req, res, next){
     const { token } = res.locals;
     const { url } = req.body;
-
     try {
         const validation = urlSchema.validate(req.body, {abortEarly: false});
         if(validation.error){
@@ -31,7 +30,7 @@ async function validateUrl(req, res, next){
         
         if(shortUrlExist.length !== 0 ) return res.status(STATUS_CODE.CONFLICT).send(MESSAGES.URL_EXIST);
 
-        res.locals.data = {id: token.id, url: req.body.url};
+        res.locals.data = {id: token.id, url: req.body.url, userId: token.userId};
         next();
     } catch (error) {
         return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);
