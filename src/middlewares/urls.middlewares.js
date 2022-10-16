@@ -75,7 +75,7 @@ async function validateId(req, res, next){
 
     try {
         const nameToken = ( await connection.query(`
-            SELECT users.email FROM sessions 
+            SELECT users.email, users."linksCount" FROM sessions 
             JOIN users ON sessions."userId"=users.id
             WHERE sessions.token = $1;
         `, [token.token])).rows;
@@ -90,6 +90,7 @@ async function validateId(req, res, next){
         if(nameUrl.length === 0) return res.status(STATUS_CODE.NOT_FOUND).send(MESSAGES.URL_NOT_FOUND);
         if(nameToken[0].email !== nameUrl[0].email) return res.status(STATUS_CODE.UNAUTHORIZED).send(MESSAGES.USER_UNAUTHORIZED);
         
+        res.locals.data = {linksCount: nameToken[0].linksCount, email: nameToken[0].email};
         next();
     } catch (error) {
         return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR);
