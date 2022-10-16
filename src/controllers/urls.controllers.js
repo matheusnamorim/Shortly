@@ -19,6 +19,7 @@ const shortedUrl = (req, res) => {
 
 const getShortUrlId = (req, res) => {
     const { data } = res.locals;
+    
     try {
         return res.status(STATUS_CODE.OK).send(data);
     } catch (error) {
@@ -42,12 +43,8 @@ const deleteUrl = (req, res) => {
     const { linksCount, email} = res.locals.data;
 
     try {
-        connection.query(`
-            DELETE FROM urls WHERE urls.id = $1;
-        ;`, [id]);
 
-        connection.query(`UPDATE users SET "linksCount" = $1 WHERE email = $2;`
-        , [linksCount-1, email]);
+        urlsRepository.deleteUrls(id, linksCount, email);
 
         return res.sendStatus(STATUS_CODE.DELETE)
     } catch (error) {

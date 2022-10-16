@@ -41,7 +41,7 @@ async function validateUrlExist(req, res, next){
     const { id } = req.params;
     try {
         const url = ( await connection.query(
-            `SELECT urls.id, urls."url", urls.url 
+            `SELECT urls.id, urls."shortUrl", urls.url 
             FROM urls WHERE urls.id = ($1);`, [id]
         )).rows;
         if(url.length === 0 ) return res.status(STATUS_CODE.NOT_FOUND).send(MESSAGES.URL_NOT_FOUND);
