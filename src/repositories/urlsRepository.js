@@ -25,4 +25,63 @@ function deleteUrls(){
     , [linksCount-1, email]);
 };
 
-export { shortedUrls, redirectUrls, deleteUrls };
+async function listShortenedUrls(userId){
+
+    const dataHead = ( await connection.query(`
+    SELECT users.id,
+    users.name,
+    SUM(urls."visitCount") AS "visitCount"
+    FROM users
+    JOIN urls ON users.id=urls."userId"
+    WHERE urls."userId" = $1
+    GROUP BY users.id;`
+    , [userId])).rows;
+
+    if(dataHead.length === 0){
+        const data = ( await connection.query(`
+            SELECT users.id,
+            users.name
+            FROM users
+            WHERE users.id = $1;
+        `, [userId])).rows[0];
+
+        return {                
+            ...data,
+            visitCount: 0,
+            shortenedUrls: []
+        };
+    }
+
+    const dataBody = ( await connection.query(`
+        SELECT urls.id,
+        urls."shortUrl",
+        urls.url,
+        urls."visitCount"
+        FROM users
+        JOIN urls ON users.id=urls."userId"
+        WHERE urls."userId" = $1;`
+    , [userId])).rows;
+
+    const data = {
+        ...dataHead[0],
+        shortenedUrls: [...dataBody]
+    }
+    return data;
+};
+
+async function ranking(){
+    const list = ( await connection.query(`
+        SELECT users.id, 
+        users.name, 
+        users."linksCount",
+        COALESCE(SUM(urls."visitCount"), 0) AS "visitCount"
+        FROM users
+        LEFT JOIN urls ON users.id=urls."userId"
+        GROUP BY users.id
+        ORDER BY "visitCount" DESC
+        LIMIT 10;
+    `)).rows;
+    return list;
+}
+
+export { shortedUrls, redirectUrls, deleteUrls, listShortenedUrls, ranking };
