@@ -15,7 +15,7 @@ function redirectUrls(visitCount, id){
     , [visitCount+1, id]);
 };
 
-function deleteUrls(){
+function deleteUrls(id, linksCount, email){
     connection.query(`
         DELETE FROM urls WHERE urls.id = $1;;`
     , [id]);
