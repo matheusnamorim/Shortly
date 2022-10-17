@@ -84,4 +84,12 @@ async function ranking(){
     return list;
 }
 
-export { shortedUrls, redirectUrls, deleteUrls, listShortenedUrls, ranking };
+async function getUser(userId){
+    const user = ( await connection.query(`
+        SELECT users.name FROM users
+        WHERE users.id = $1;`
+    , [userId])).rows[0];
+    return user;
+}
+
+export { shortedUrls, redirectUrls, deleteUrls, listShortenedUrls, ranking, getUser };

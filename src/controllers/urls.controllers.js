@@ -72,4 +72,15 @@ const listRanking = async (req, res) => {
     }
 };
 
-export { shortedUrl, getShortUrlId, redirectUrl, deleteUrl, listMyShortenedUrls, listRanking };
+const getUserById = async (req, res) => {
+    const { token } = res.locals;
+    try {
+        const result = await urlsRepository.getUser(token.userId);
+
+        return res.status(STATUS_CODE.OK).send(result)
+    } catch (error) {
+        return res.status(STATUS_CODE.SERVER_ERROR).send(MESSAGES.SERVER_ERROR); 
+    }
+};
+
+export { shortedUrl, getShortUrlId, redirectUrl, deleteUrl, listMyShortenedUrls, listRanking, getUserById };
